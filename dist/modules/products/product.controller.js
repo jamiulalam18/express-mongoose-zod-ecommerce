@@ -17,15 +17,8 @@ const product_service_1 = require("./product.service");
 const product_validation_1 = __importDefault(require("./product.validation"));
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const {product: productData} = req.body;
-        // const zodParsedData = productSchema.parse(productData);
-        const validation = product_validation_1.default.parse(req.body);
-        // if (!validation.success) {
-        //   return res.status(400).json({ errors: validation.error.format() });
-        // }
-        // const { name, description, price, category, tags, variants, inventory } =
-        //   validation.data;
-        const result = yield product_service_1.ProductServices.createProduct(validation);
+        const validationData = yield product_validation_1.default.parse(req.body);
+        const result = yield product_service_1.ProductServices.createProduct(validationData);
         res.status(200).json({
             success: true,
             message: "Product created successfully",
@@ -42,12 +35,32 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield product_service_1.ProductServices.getAllProductsFromDB();
-        res.status(200).json({
-            success: true,
-            message: "Products fetched successfully!",
-            data: result,
-        });
+        const { searchTerm } = req.query;
+        if (searchTerm) {
+            const result = yield product_service_1.ProductServices.searchProductFromDB(searchTerm);
+            if (result.length > 0) {
+                res.status(200).json({
+                    success: true,
+                    message: `Products matching search term '${searchTerm}' fetched successfully!`,
+                    data: result,
+                });
+            }
+            else {
+                res.status(200).json({
+                    success: true,
+                    message: `No products matching search term '${searchTerm}' found!`,
+                    data: result,
+                });
+            }
+        }
+        else {
+            const result = yield product_service_1.ProductServices.getAllProductsFromDB();
+            res.status(200).json({
+                success: true,
+                message: "Products fetched successfully!",
+                data: result,
+            });
+        }
     }
     catch (error) {
         res.status(500).json({
@@ -75,8 +88,48 @@ const getProductByID = (req, res) => __awaiter(void 0, void 0, void 0, function*
         });
     }
 });
+const updateProductByID = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { productId } = req.params;
+        const updatedData = req.body;
+        const validationData = yield product_validation_1.default.parse(updatedData);
+        const result = yield product_service_1.ProductServices.updateProductByIDFromDB(productId, validationData);
+        res.status(200).json({
+            success: true,
+            message: "Product updated successfully!",
+            data: result,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Product could not be updated.",
+            data: error,
+        });
+    }
+});
+const deleteProductByID = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { productId } = req.params;
+        yield product_service_1.ProductServices.deleteProductByIDFromDB(productId);
+        res.status(200).json({
+            success: true,
+            message: "Product deleted successfully!",
+            data: null,
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Product could not be deleted.",
+            data: null,
+        });
+    }
+});
 exports.ProductControllers = {
     createProduct,
     getAllProducts,
     getProductByID,
+    updateProductByID,
+    deleteProductByID,
 };

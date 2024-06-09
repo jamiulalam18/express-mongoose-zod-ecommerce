@@ -16,28 +16,14 @@ const getProductByIDFromDB = async (id: string) => {
 };
 
 const updateProductByIDFromDB = async (id: string, productData: EProduct) => {
-  // const filterId = { _id: id };
-  // const options = { new: true };
-  // const updateDoc = {
-  //   $set: {
-  //     name: productData.name,
-  //     description: productData.description,
-  //     price: productData.price,
-  //     category: productData.category,
-  //     tags: productData.tags,
-  //     variants: productData.variants,
-  //     inventory: productData.inventory,
-  //   },
-  // };
-  // const result = await Product.findOneAndUpdate(
-  //     filterId,
-  //     updateDoc,
-  //     options,
-  //   );
-
   const result = await Product.findOneAndUpdate({ _id: id }, productData, {
     new: true,
   });
+  return result;
+};
+
+const deleteProductByIDFromDB = async (id: string) => {
+  const result = await Product.deleteOne({ _id: id });
   return result;
 };
 
@@ -46,4 +32,5 @@ export const ProductServices = {
   getAllProductsFromDB,
   getProductByIDFromDB,
   updateProductByIDFromDB,
+  deleteProductByIDFromDB,
 };

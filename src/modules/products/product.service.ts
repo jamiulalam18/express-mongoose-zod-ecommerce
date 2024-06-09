@@ -1,11 +1,22 @@
 import { EProduct } from "./product.interface";
 import { Product } from "./product.model";
 
-const createProduct = async (payload:EProduct)=>{
-    const result = await Product.create(payload);
-    return result;
-}
+const createProduct = async (payload: EProduct) => {
+  const result = await Product.create(payload);
+  return result;
+};
+const getAllProductsFromDB = async () => {
+  const result = await Product.find();
+  return result;
+};
+
+const getProductByIDFromDB = async (id: string) => {
+  const result = await Product.findOne({ _id: id });
+  return result;
+};
 
 export const ProductServices = {
-    createProduct,
-}
+  createProduct,
+  getAllProductsFromDB,
+  getProductByIDFromDB,
+};

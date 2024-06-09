@@ -12,6 +12,6 @@ export type EProduct = {
   price: number;
   category: string;
   tags: string[];
-  variants: [EVariant];
+  variants: EVariant[];
   inventory: EInventory;
 };

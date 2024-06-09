@@ -22,12 +22,32 @@ const createProduct = async (req: Request, res: Response) => {
 
 const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const result = await ProductServices.getAllProductsFromDB();
-    res.status(200).json({
-      success: true,
-      message: "Products fetched successfully!",
-      data: result,
-    });
+    const { searchTerm } = req.query;
+    if (searchTerm) {
+      const result = await ProductServices.searchProductFromDB(
+        searchTerm as string
+      );
+      if (result.length > 0) {
+        res.status(200).json({
+          success: true,
+          message: `Products matching search term '${searchTerm}' fetched successfully!`,
+          data: result,
+        });
+      } else {
+        res.status(200).json({
+            success: true,
+            message: `No products matching search term '${searchTerm}' found!`,
+            data: result,
+          });
+      }
+    } else {
+      const result = await ProductServices.getAllProductsFromDB();
+      res.status(200).json({
+        success: true,
+        message: "Products fetched successfully!",
+        data: result,
+      });
+    }
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -80,28 +100,28 @@ const updateProductByID = async (req: Request, res: Response) => {
 };
 
 const deleteProductByID = async (req: Request, res: Response) => {
-    try {
-      const { productId } = req.params;
-      await ProductServices.deleteProductByIDFromDB(productId);
-  
-      res.status(200).json({
-        success: true,
-        message: "Product deleted successfully!",
-        data: null,
-      });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Product could not be deleted.",
-            data: null,
-          });
-    }
-  };
+  try {
+    const { productId } = req.params;
+    await ProductServices.deleteProductByIDFromDB(productId);
+
+    res.status(200).json({
+      success: true,
+      message: "Product deleted successfully!",
+      data: null,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Product could not be deleted.",
+      data: null,
+    });
+  }
+};
 
 export const ProductControllers = {
   createProduct,
   getAllProducts,
   getProductByID,
   updateProductByID,
-  deleteProductByID
+  deleteProductByID,
 };

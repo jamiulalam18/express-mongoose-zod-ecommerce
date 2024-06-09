@@ -15,8 +15,35 @@ const getProductByIDFromDB = async (id: string) => {
   return result;
 };
 
+const updateProductByIDFromDB = async (id: string, productData: EProduct) => {
+  // const filterId = { _id: id };
+  // const options = { new: true };
+  // const updateDoc = {
+  //   $set: {
+  //     name: productData.name,
+  //     description: productData.description,
+  //     price: productData.price,
+  //     category: productData.category,
+  //     tags: productData.tags,
+  //     variants: productData.variants,
+  //     inventory: productData.inventory,
+  //   },
+  // };
+  // const result = await Product.findOneAndUpdate(
+  //     filterId,
+  //     updateDoc,
+  //     options,
+  //   );
+
+  const result = await Product.findOneAndUpdate({ _id: id }, productData, {
+    new: true,
+  });
+  return result;
+};
+
 export const ProductServices = {
   createProduct,
   getAllProductsFromDB,
   getProductByIDFromDB,
+  updateProductByIDFromDB,
 };

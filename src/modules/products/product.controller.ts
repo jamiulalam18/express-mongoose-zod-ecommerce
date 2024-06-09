@@ -4,19 +4,8 @@ import productSchema from "./product.validation";
 
 const createProduct = async (req: Request, res: Response) => {
   try {
-    // const {product: productData} = req.body;
-    // const zodParsedData = productSchema.parse(productData);
-
-    const validation = productSchema.parse(req.body);
-
-    // if (!validation.success) {
-    //   return res.status(400).json({ errors: validation.error.format() });
-    // }
-
-    // const { name, description, price, category, tags, variants, inventory } =
-    //   validation.data;
-
-    const result = await ProductServices.createProduct(validation);
+    const validationData = await productSchema.parse(req.body);
+    const result = await ProductServices.createProduct(validationData);
     res.status(200).json({
       success: true,
       message: "Product created successfully",
@@ -66,8 +55,33 @@ const getProductByID = async (req: Request, res: Response) => {
   }
 };
 
+const updateProductByID = async (req: Request, res: Response) => {
+  try {
+    const { productId } = req.params;
+    const updatedData = req.body;
+    const validationData = await productSchema.parse(updatedData);
+    const result = await ProductServices.updateProductByIDFromDB(
+      productId,
+      validationData
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Product updated successfully!",
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Product could not be updated.",
+      data: error,
+    });
+  }
+};
+
 export const ProductControllers = {
   createProduct,
   getAllProducts,
   getProductByID,
+  updateProductByID
 };
